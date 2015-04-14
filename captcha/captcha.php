@@ -11,9 +11,6 @@ $token = get_input('captcha_token');
 // Output captcha
 if ($token)
 {
-    // Set correct header
-    header("Content-type: image/jpeg");
-
     // Generate captcha
     $captcha = captcha_generate_captcha($token);
 
@@ -31,6 +28,22 @@ if ($token)
     // Output image
     imagejpeg($image);
 
+    // Output image
+    ob_start(); // start a new output buffer
+    imagejpeg($image);
+    $ImageData = ob_get_contents();
+    $ImageDataLength = ob_get_length();
+    ob_end_clean(); // stop this output buffer
+
+    header("Content-Type: image/jpeg") ;
+    header("Content-Length: ".$ImageDataLength);
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    echo $ImageData;
+
     // Free memory
     imagedestroy($image);
 }
+
+exit();
